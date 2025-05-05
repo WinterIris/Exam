@@ -1,0 +1,102 @@
+/*
+File Name: Exam Submission
+
+Developer: Christopher Wilson
+
+Date: 05/04/2025
+
+Requirements: Create a C++ program that reads numbers from a user-specified file into an array, then displays the lowest number, highest number, total, and average.
+
+*/
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <limits>
+
+using namespace std;
+
+const int MAX_SIZE = 1000;
+
+// Function declarations
+int loadNumbersFromFile(const string& filename, double numbers[], int maxSize);
+double findLowest(const double numbers[], int size);
+double findHighest(const double numbers[], int size);
+double calculateTotal(const double numbers[], int size);
+double calculateAverage(const double numbers[], int size);
+
+int main() {
+    double numbers[MAX_SIZE];
+    int size = 0;
+    string filename;
+
+    cout << "Enter the file name: ";
+    getline(cin, filename);
+
+    size = loadNumbersFromFile(filename, numbers, MAX_SIZE);
+
+    if (size == 0) {
+        cout << "No valid numbers found or failed to read the file.\n";
+        return 1;
+    }
+
+    cout << "\n--- File Statistics ---\n";
+    cout << "Lowest Number:  " << findLowest(numbers, size) << "\n";
+    cout << "Highest Number: " << findHighest(numbers, size) << "\n";
+    cout << "Total:          " << calculateTotal(numbers, size) << "\n";
+    cout << "Average:        " << calculateAverage(numbers, size) << "\n";
+
+    return 0;
+}
+
+// Reads numbers from the given file into the array. Returns the number of valid entries.
+int loadNumbersFromFile(const string& filename, double numbers[], int maxSize) {
+    ifstream inFile(filename);
+    if (!inFile) {
+        cerr << "Error opening file.\n";
+        return 0;
+    }
+
+    int count = 0;
+    string line;
+    while (getline(inFile, line) && count < maxSize) {
+        try {
+            numbers[count++] = stod(line);
+        } catch (...) {
+            cerr << "Warning: Skipping invalid line -> " << line << "\n";
+        }
+    }
+
+    inFile.close();
+    return count;
+}
+
+double findLowest(const double numbers[], int size) {
+    double lowest = numbers[0];
+    for (int i = 1; i < size; ++i) {
+        if (numbers[i] < lowest)
+            lowest = numbers[i];
+    }
+    return lowest;
+}
+
+double findHighest(const double numbers[], int size) {
+    double highest = numbers[0];
+    for (int i = 1; i < size; ++i) {
+        if (numbers[i] > highest)
+            highest = numbers[i];
+    }
+    return highest;
+}
+
+double calculateTotal(const double numbers[], int size) {
+    double total = 0;
+    for (int i = 0; i < size; ++i)
+        total += numbers[i];
+    return total;
+}
+
+double calculateAverage(const double numbers[], int size) {
+    if (size == 0) return 0;
+    return calculateTotal(numbers, size) / size;
+}
